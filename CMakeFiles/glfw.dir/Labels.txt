@@ -1,0 +1,13 @@
+# Target labels
+ glfw
+# Source files and their labels
+/home/gabriel/Documentos/Trabalho1/CMakeFiles/glfw
+/home/gabriel/Documentos/Trabalho1/CMakeFiles/glfw.rule
+/home/gabriel/Documentos/Trabalho1/CMakeFiles/glfw-complete.rule
+/home/gabriel/Documentos/Trabalho1/glfw/src/glfw-stamp/glfw-install.rule
+/home/gabriel/Documentos/Trabalho1/glfw/src/glfw-stamp/glfw-mkdir.rule
+/home/gabriel/Documentos/Trabalho1/glfw/src/glfw-stamp/glfw-download.rule
+/home/gabriel/Documentos/Trabalho1/glfw/src/glfw-stamp/glfw-update.rule
+/home/gabriel/Documentos/Trabalho1/glfw/src/glfw-stamp/glfw-patch.rule
+/home/gabriel/Documentos/Trabalho1/glfw/src/glfw-stamp/glfw-configure.rule
+/home/gabriel/Documentos/Trabalho1/glfw/src/glfw-stamp/glfw-build.rule
