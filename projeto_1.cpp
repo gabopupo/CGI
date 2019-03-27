@@ -2,6 +2,6 @@
 
 int main(int argc, char const *argv[]) {
   cgicmc::Window window;
-  window.createWindow(800, 600);
+  window.createWindow(500, 500);
   window.run();
 }
