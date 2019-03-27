@@ -211,8 +211,8 @@ ExternalResources/preinstall:
 # Target rules for target ExternalResources/CMakeFiles/cg2019cpp.dir
 
 # All Build rule for target.
-ExternalResources/CMakeFiles/cg2019cpp.dir/all: CMakeFiles/glfw.dir/all
 ExternalResources/CMakeFiles/cg2019cpp.dir/all: ExternalResources/GLAD/CMakeFiles/glad.dir/all
+ExternalResources/CMakeFiles/cg2019cpp.dir/all: CMakeFiles/glfw.dir/all
 	$(MAKE) -f ExternalResources/CMakeFiles/cg2019cpp.dir/build.make ExternalResources/CMakeFiles/cg2019cpp.dir/depend
 	$(MAKE) -f ExternalResources/CMakeFiles/cg2019cpp.dir/build.make ExternalResources/CMakeFiles/cg2019cpp.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/gabriel/Documentos/Trabalho1/CMakeFiles --progress-num=1,2 "Built target cg2019cpp"

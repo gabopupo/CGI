@@ -1,9 +1,0 @@
-﻿main.obj : error LNK2019: símbolo externo indefinido _glfwInit referenciado na função _main
-main.obj : error LNK2019: símbolo externo indefinido _glfwTerminate referenciado na função _main
-main.obj : error LNK2019: símbolo externo indefinido _glfwCreateWindow referenciado na função _main
-main.obj : error LNK2019: símbolo externo indefinido _glfwWindowShouldClose referenciado na função _main
-main.obj : error LNK2019: símbolo externo indefinido _glfwPollEvents referenciado na função _main
-main.obj : error LNK2019: símbolo externo indefinido _glfwMakeContextCurrent referenciado na função _main
-main.obj : error LNK2019: símbolo externo indefinido _glfwSwapBuffers referenciado na função _main
-C:\Users\eduar\Desktop\OpenGLroot\OpenGLVS\\..\ExternalResources\GLFW\lib-vc2015\\glfw3.lib : warning LNK4272: o tipo de máquina da biblioteca 'x64' está em conflito com o tipo de máquina de destino 'x86'
-C:\Users\eduar\Desktop\OpenGLroot\OpenGLVS\Debug\OpenGLVS.exe : fatal error LNK1120: 7 externo não resolvidos
