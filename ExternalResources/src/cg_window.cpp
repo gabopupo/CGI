@@ -75,9 +75,22 @@ namespace cgicmc {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-      -0.5f, -0.5f, 0.0f, // left  
-      0.5f, -0.5f, 0.0f, // right 
-      0.0f,  0.5f, 0.0f  // top   
+      	//bottom triangle	
+	 	0.0f, -0.5f, 0.0f, // left  
+	 	0.3f, -0.5f, 0.0f, // right 
+	 	0.0f,  0.0f, 0.0f,  // top   
+		//right triangle			
+		0.0f,  0.0f, 0.0f,  // left
+		0.5f,  0.0f, 0.0f,  // right
+		0.5f,  0.3f, 0.0f,   // top 
+		//top triangle	
+		-0.3f,  0.5f, 0.0f,  // left
+		0.0f,  0.5f, 0.0f,  // right
+		0.0f,  0.0f, 0.0f,   // top 
+		//left triangle	
+		-0.5f,  0.0f, 0.0f,  // left
+		-0.5f,  -0.3f, 0.0f,  // right
+		0.0f,  0.0f, 0.0f,   // top  
     };
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
@@ -107,7 +120,7 @@ namespace cgicmc {
 
       glUseProgram(shaderProgram);
       glBindVertexArray(VAO);
-      glDrawArrays(GL_TRIANGLES, 0, 3);
+      glDrawArrays(GL_TRIANGLES, 0, 12);
 
       // Controla eventos e troca os buffers para renderizacao
       glfwSwapBuffers(_window);
