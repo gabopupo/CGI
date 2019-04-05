@@ -25,7 +25,7 @@ namespace cgicmc {
 	const char *fragmentShaderSource = "#version 330 core\n"
 		"out vec3 FragColor;\n"
 		"void main() {\n"
-		"   FragColor = vec3(1.0f, 0.5f, 0.2f);\n"
+		"   FragColor = vec3(1.0f, 0.0f, 0.0f);\n"
 		"}\n\0";
 
 	// program rendering pipeline attaching all shaders
@@ -127,7 +127,7 @@ namespace cgicmc {
 			processInput(_window);
 
 			// paint the background
-			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+			glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			// draw the triangles
