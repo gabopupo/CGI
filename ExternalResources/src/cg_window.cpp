@@ -4,6 +4,7 @@
 namespace cgicmc {
   Window::Window() {
     glfwInit();
+    glfwWindowHint(GLFW_SAMPLES, 4); // apply 4x antialiasing
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
