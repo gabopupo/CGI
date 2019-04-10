@@ -4,21 +4,31 @@ namespace cgicmc {
 
 	// Window constructor
 	Window::Window() {
+		// initialize and configure the glfw
 		glfwInit();
 		glfwWindowHint(GLFW_SAMPLES, 4); // apply 4x antialiasing
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // select OpenGL version 3.3
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+		// initialize the rotation values
+		stopRotation = false;
+		rotationAngle = 0;
+		rotationSpeed = 0.001f;
 	}
 
 	// Window destructor
 	Window::~Window() { glfwTerminate(); }
 
 	// vertex shader source string
-	const char *vertexShaderSource = "#version 330 core\n"
+	const char *vertexShaderSource = 
+		"#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;\n"
+
+		"uniform mat4 transform;\n"
+
 		"void main() {\n"
-		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 		"}\0";
 
 	// fragment shader source string
@@ -72,8 +82,16 @@ namespace cgicmc {
 
 	// process the useful inputs
 	void Window::processInput(GLFWwindow *_window) {
+		// escape key
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(_window, true);
+		// rotation keys
+		if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
+			rotationSpeed += SPEED_VAR;
+		if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
+			rotationSpeed -= SPEED_VAR;
+		if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+			stopRotation = !stopRotation;
 	}
 
 	void Window::run() {
@@ -121,10 +139,21 @@ namespace cgicmc {
 		// enable attribute index 0 as being used
 		glEnableVertexAttribArray(0);
 
+		// get the "transform" variable location (to apply transformations later)
+		GLuint shaderTransform = glGetUniformLocation(shaderProgram, "transform");
+
 		// window main loop
 		while (!glfwWindowShouldClose(_window)) {
+			
 			// process the input commands
 			processInput(_window);
+
+			// apply the rotation (if not stopped)
+			if (!stopRotation) {
+				rotationAngle += rotationSpeed;
+				glm::mat4 rotationMatrix = glm::rotate(rotationAngle, glm::vec3(0, 0, 1));
+				glUniformMatrix4fv(shaderTransform, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
+			}
 
 			// paint the background
 			glClearColor(0.0f, 0.0f, 0.5f, 1.0f);

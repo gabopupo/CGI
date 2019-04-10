@@ -3,6 +3,10 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtx/transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 #include <iostream>
 
 namespace cgicmc {
@@ -18,7 +22,7 @@ public:
   ~Window();
 
   ///
-  /// Create single window of 800x600 size
+  /// Create a single window with the specified size
   void createWindow(int, int);
 
   ///
@@ -30,7 +34,11 @@ protected:
 
   int _viewPortSize;
   GLFWwindow *_window;
+  bool stopRotation;
+  float rotationAngle;
+  float rotationSpeed;
+  const float SPEED_VAR = 0.00003f;
 };
-} // namespace cgicmc
+}
 
 #endif
