@@ -11,8 +11,13 @@ namespace cgicmc {
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+		// initialize the translation values
+		x = 0;
+		y = 0;
+
 		// initialize the rotation values
 		stopRotation = false;
+		spacePressed = false;
 		rotationAngle = 0;
 		rotationSpeed = 0.001f;
 	}
@@ -82,16 +87,36 @@ namespace cgicmc {
 
 	// process the useful inputs
 	void Window::processInput(GLFWwindow *_window) {
+
 		// escape key
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(_window, true);
+
+		// translation keys
+		if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+			y += DIST_VAR;
+		if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+			x -= DIST_VAR;
+		if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+			y -= DIST_VAR;
+		if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+			x += DIST_VAR;
+
 		// rotation keys
 		if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
 			rotationSpeed += SPEED_VAR;
 		if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
 			rotationSpeed -= SPEED_VAR;
-		if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS)
-			stopRotation = !stopRotation;
+		if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			// to avoid repeated changes with a single key press
+			if (!spacePressed) {
+				spacePressed = true;
+				stopRotation = !stopRotation;
+			}
+		}
+		else {
+			spacePressed = false;
+		}
 	}
 
 	void Window::run() {
@@ -148,12 +173,30 @@ namespace cgicmc {
 			// process the input commands
 			processInput(_window);
 
+			// DEBUG: print values
+			//std::cout<<"X: "<<x<<"  Y: "<<y<<"  angle: "<<rotationAngle<<"  speed: "<<rotationSpeed<<' '<<stopRotation<<std::endl;
+
 			// apply the rotation (if not stopped)
 			if (!stopRotation) {
 				rotationAngle += rotationSpeed;
-				glm::mat4 rotationMatrix = glm::rotate(rotationAngle, glm::vec3(0, 0, 1));
-				glUniformMatrix4fv(shaderTransform, 1, GL_FALSE, glm::value_ptr(rotationMatrix));
 			}
+
+			// calculate the translation matrix
+			glm::mat4 translationMatrix = glm::mat4(1.0f);
+			translationMatrix[0][3] = x;
+			translationMatrix[1][3] = y;
+
+			// calculate the rotation matrix
+			glm::mat4 rotationMatrix = glm::mat4(1.0f);
+			float sin = glm::sin(rotationAngle);
+			float cos = glm::cos(rotationAngle);
+			rotationMatrix[0][0] = cos;
+			rotationMatrix[0][1] = -sin;
+			rotationMatrix[1][0] = sin;
+			rotationMatrix[1][1] = cos;
+
+			// apply the transformations
+			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(rotationMatrix * translationMatrix));
 
 			// paint the background
 			glClearColor(0.0f, 0.0f, 0.5f, 1.0f);

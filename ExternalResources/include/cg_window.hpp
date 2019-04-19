@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp> // glm::mat4
-#include <glm/gtx/transform.hpp> // glm::translate, glm::rotate, glm::scale
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
 #include <iostream>
 
@@ -32,12 +31,18 @@ public:
 protected:
   void processInput(GLFWwindow *window);
 
-  int _viewPortSize;
+  // openGL variables
   GLFWwindow *_window;
-  bool stopRotation;
+
+  // translation variables
+  float x, y;
+  const float DIST_VAR = 0.0005f;
+
+  // rotation variables
+  bool stopRotation, spacePressed;
   float rotationAngle;
   float rotationSpeed;
-  const float SPEED_VAR = 0.00003f;
+  const float SPEED_VAR = 0.00001f;
 };
 }
 
