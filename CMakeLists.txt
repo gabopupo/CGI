@@ -3,8 +3,9 @@ project(CG2019ICMC)
 cmake_minimum_required(VERSION 3.10)
 
 include(ExternalProject)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ExternalResources/GLFW")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ExternalResources/")
 include( glfw )
+include( glm )
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/ExternalResources/GLAD" "ExternalResources/GLAD")
 set(GLAD_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/ExternalResources/GLAD/include")

@@ -1,8 +1,0 @@
-/home/gabriel/Documentos/Trabalho1/glfw/include/GLFW/glfw3.h
-/home/gabriel/Documentos/Trabalho1/glfw/include/GLFW/glfw3native.h
-/home/gabriel/Documentos/Trabalho1/glfw/lib/cmake/glfw3/glfw3Config.cmake
-/home/gabriel/Documentos/Trabalho1/glfw/lib/cmake/glfw3/glfw3ConfigVersion.cmake
-/home/gabriel/Documentos/Trabalho1/glfw/lib/cmake/glfw3/glfw3Targets.cmake
-/home/gabriel/Documentos/Trabalho1/glfw/lib/cmake/glfw3/glfw3Targets-release.cmake
-/home/gabriel/Documentos/Trabalho1/glfw/lib/pkgconfig/glfw3.pc
-/home/gabriel/Documentos/Trabalho1/glfw/lib/libglfw3.a
