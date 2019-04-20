@@ -19,7 +19,7 @@ namespace cgicmc {
 		stopRotation = false;
 		spacePressed = false;
 		rotationAngle = 0;
-		rotationSpeed = 0.001f;
+		rotationSpeed = 0.01f;
 	}
 
 	// Window destructor
@@ -103,10 +103,15 @@ namespace cgicmc {
 			x += DIST_VAR;
 
 		// rotation keys
-		if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
-			rotationSpeed += SPEED_VAR;
-		if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
-			rotationSpeed -= SPEED_VAR;
+		// condition to avoid speed changing when rotation is halted
+		if (!stopRotation) {
+			// increase rotation speed
+			if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
+				rotationSpeed += SPEED_VAR;
+			// decrease rotation speed
+			if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
+				rotationSpeed -= SPEED_VAR;
+		}
 		if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			// to avoid repeated changes with a single key press
 			if (!spacePressed) {

@@ -36,13 +36,13 @@ protected:
 
   // translation variables
   float x, y;
-  const float DIST_VAR = 0.0005f;
+  const float DIST_VAR = 0.001f;
 
   // rotation variables
   bool stopRotation, spacePressed;
   float rotationAngle;
   float rotationSpeed;
-  const float SPEED_VAR = 0.00001f;
+  const float SPEED_VAR = 0.0001f;
 };
 }
 
