@@ -88,19 +88,19 @@ namespace cgicmc {
 	// process the useful inputs
 	void Window::processInput(GLFWwindow *_window) {
 
-		// escape key
+		// escape key: close process
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(_window, true);
 
 		// translation keys
 		if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-			y += DIST_VAR;
+			y += DIST_VAR; // W: move up
 		if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-			x -= DIST_VAR;
+			x -= DIST_VAR; // A: mode left
 		if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-			y -= DIST_VAR;
+			y -= DIST_VAR; // S: move down
 		if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-			x += DIST_VAR;
+			x += DIST_VAR; // D: move right
 
 		// rotation keys
 		// condition to avoid speed changing when rotation is halted
@@ -112,14 +112,15 @@ namespace cgicmc {
 			if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
 				rotationSpeed -= SPEED_VAR;
 		}
+
+		// stop rotation when space key is pressed
 		if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			// to avoid repeated changes with a single key press
 			if (!spacePressed) {
 				spacePressed = true;
 				stopRotation = !stopRotation;
 			}
-		}
-		else {
+		} else {
 			spacePressed = false;
 		}
 	}
@@ -196,8 +197,8 @@ namespace cgicmc {
 			float sin = glm::sin(rotationAngle);
 			float cos = glm::cos(rotationAngle);
 			rotationMatrix[0][0] = cos;
-			rotationMatrix[0][1] = -sin;
-			rotationMatrix[1][0] = sin;
+			rotationMatrix[0][1] = sin;
+			rotationMatrix[1][0] = -sin;
 			rotationMatrix[1][1] = cos;
 
 			// apply the transformations
