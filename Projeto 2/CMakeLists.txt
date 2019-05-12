@@ -16,8 +16,8 @@ add_subdirectory(ExternalResources)
 # EXECUTAVEIS
 
 # Versao orientado a objetos
-add_executable( projeto1CPP projeto_1.cpp )
-target_link_libraries( projeto1CPP glad ${GLFW_LIBRARIES} cg2019cpp )
-target_include_directories( projeto1CPP PUBLIC 
+add_executable( projeto2CPP projeto_2.cpp )
+target_link_libraries( projeto2CPP glad ${GLFW_LIBRARIES} cg2019cpp )
+target_include_directories( projeto2CPP PUBLIC 
                             ${CG2019ICMC_CPP_INCLUDE_DIR}
                             ${GLFW_INCLUDE_DIR} ${GLAD_INCLUDES} )

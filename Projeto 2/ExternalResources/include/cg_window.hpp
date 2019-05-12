@@ -26,7 +26,7 @@ public:
 
   ///
   /// Run the application in a loop.
-  void run();
+  void run(const char *);
 
 protected:
   void processInput(GLFWwindow *window);
@@ -35,14 +35,12 @@ protected:
   GLFWwindow *_window;
 
   // translation variables
-  float x, y;
-  const float DIST_VAR = 0.001f;
+  float angleX, angleY, angleZ;
+  const float ROT_VAR = 0.01f;
 
   // rotation variables
-  bool stopRotation, spacePressed;
-  float rotationAngle;
-  float rotationSpeed;
-  const float SPEED_VAR = 0.0001f;
+  float dimension;
+  const float SCA_VAR = 0.001f;
 };
 }
 

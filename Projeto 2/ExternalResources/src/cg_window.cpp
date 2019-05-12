@@ -12,14 +12,12 @@ namespace cgicmc {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// initialize the translation values
-		x = 0;
-		y = 0;
+		angleX = 0;
+		angleY = 0;
+		angleZ = 0;
 
 		// initialize the rotation values
-		stopRotation = false;
-		spacePressed = false;
-		rotationAngle = 0;
-		rotationSpeed = 0.01f;
+		dimension = 0.1f;
 	}
 
 	// Window destructor
@@ -92,41 +90,33 @@ namespace cgicmc {
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(_window, true);
 
-		// translation keys
-		if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-			y += DIST_VAR; // W: move up
-		if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-			x -= DIST_VAR; // A: mode left
-		if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-			y -= DIST_VAR; // S: move down
-		if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-			x += DIST_VAR; // D: move right
-
 		// rotation keys
-		// condition to avoid speed changing when rotation is halted
-		if (!stopRotation) {
-			// increase rotation speed
-			if (glfwGetKey(_window, GLFW_KEY_E) == GLFW_PRESS)
-				rotationSpeed += SPEED_VAR;
-			// decrease rotation speed
-			if (glfwGetKey(_window, GLFW_KEY_Q) == GLFW_PRESS)
-				rotationSpeed -= SPEED_VAR;
-		}
+		// do rotation on X axis
+		if (glfwGetKey(_window, GLFW_KEY_X) == GLFW_PRESS)
+			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+				angleX -= ROT_VAR; // invert rotation when Shift is pressed
+			else angleX += ROT_VAR;
+		// do rotation on Y axis
+		if (glfwGetKey(_window, GLFW_KEY_Y) == GLFW_PRESS)
+			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+				angleY -= ROT_VAR;
+			else angleY += ROT_VAR;
+		// do rotation on Z axis
+		if (glfwGetKey(_window, GLFW_KEY_Z) == GLFW_PRESS)
+			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+				angleZ -= ROT_VAR;
+			else angleZ += ROT_VAR;
 
-		// stop rotation when space key is pressed
-		if (glfwGetKey(_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-			// to avoid repeated changes with a single key press
-			if (!spacePressed) {
-				spacePressed = true;
-				stopRotation = !stopRotation;
-			}
-		} else {
-			spacePressed = false;
-		}
+		// scaling keys
+		// increase object size
+		if (glfwGetKey(_window, GLFW_KEY_M) == GLFW_PRESS)
+			dimension += SCA_VAR;
+		// decrease object size
+		if (glfwGetKey(_window, GLFW_KEY_N) == GLFW_PRESS)
+			dimension -= SCA_VAR;
 	}
 
-	void Window::run() {
-
+	void Window::run(const char * objFile) {
 		// build and compile our shader program
 		GLint shaderProgram = createRenderingPipeline();
 		glUseProgram(shaderProgram);
@@ -179,33 +169,20 @@ namespace cgicmc {
 			// process the input commands
 			processInput(_window);
 
-			// DEBUG: print values
-			//std::cout<<"X: "<<x<<"  Y: "<<y<<"  angle: "<<rotationAngle<<"  speed: "<<rotationSpeed<<' '<<stopRotation<<std::endl;
+			// calculate the scaling matrix
+			glm::mat4 scalingMatrix = glm::mat4(1.0f);
+			scalingMatrix[0][0] = dimension;
+			scalingMatrix[1][1] = dimension;
+			scalingMatrix[2][2] = dimension;
 
-			// apply the rotation (if not stopped)
-			if (!stopRotation) {
-				rotationAngle += rotationSpeed;
-			}
-
-			// calculate the translation matrix
-			glm::mat4 translationMatrix = glm::mat4(1.0f);
-			translationMatrix[0][3] = x;
-			translationMatrix[1][3] = y;
-
-			// calculate the rotation matrix
+			// TODO: calcuate the rotation matrix
 			glm::mat4 rotationMatrix = glm::mat4(1.0f);
-			float sin = glm::sin(rotationAngle);
-			float cos = glm::cos(rotationAngle);
-			rotationMatrix[0][0] = cos;
-			rotationMatrix[0][1] = sin;
-			rotationMatrix[1][0] = -sin;
-			rotationMatrix[1][1] = cos;
 
 			// apply the transformations
-			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(rotationMatrix * translationMatrix));
+			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(scalingMatrix * rotationMatrix));
 
 			// paint the background
-			glClearColor(0.0f, 0.0f, 0.5f, 1.0f);
+			glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			// draw the triangles
