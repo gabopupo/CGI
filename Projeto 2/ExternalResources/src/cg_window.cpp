@@ -15,9 +15,6 @@ namespace cgicmc {
 		angleX = 0;
 		angleY = 0;
 		angleZ = 0;
-		pressedX = false;
-		pressedY = false;
-		pressedZ = false;
 
 		// initialize the rotation values
 		dimension = 1;
@@ -96,36 +93,24 @@ namespace cgicmc {
 		// rotation keys
 		// do rotation on X axis
 		if (glfwGetKey(_window, GLFW_KEY_X) == GLFW_PRESS) {
-			pressedX = true;
 			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				angleX -= ROT_VAR; // invert rotation when Shift is pressed
 			else angleX += ROT_VAR;
 		}
 
-		if (glfwGetKey(_window, GLFW_KEY_X) == GLFW_RELEASE)
-			pressedX = false;
-
 		// do rotation on Y axis
 		if (glfwGetKey(_window, GLFW_KEY_Y) == GLFW_PRESS) {
-			pressedY = true;
 			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				angleY -= ROT_VAR;
 			else angleY += ROT_VAR;
 		}
 
-		if (glfwGetKey(_window, GLFW_KEY_Y) == GLFW_RELEASE)
-			pressedY = false;
-
 		// do rotation on Z axis
 		if (glfwGetKey(_window, GLFW_KEY_Z) == GLFW_PRESS) {
-			pressedZ = true;
 			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				angleZ -= ROT_VAR;
 			else angleZ += ROT_VAR;
 		}
-
-		if (glfwGetKey(_window, GLFW_KEY_Z) == GLFW_RELEASE)
-			pressedZ = false;
 
 		// scaling keys
 		// increase object size
@@ -220,7 +205,7 @@ namespace cgicmc {
 		while (!glfwWindowShouldClose(_window)) {
 			// process the input commands
 			processInput(_window);
-			
+
 			// calculate the scaling matrix
 			glm::mat4 scalingMatrix = glm::mat4(1.0f);
 			scalingMatrix[0][0] = dimension;

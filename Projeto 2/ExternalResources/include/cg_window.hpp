@@ -37,7 +37,6 @@ protected:
 
   // translation variables
   float angleX, angleY, angleZ;
-  bool pressedX, pressedY, pressedZ;
   const float ROT_VAR = 0.05f;
 
   // rotation variables
