@@ -15,9 +15,12 @@ namespace cgicmc {
 		angleX = 0;
 		angleY = 0;
 		angleZ = 0;
+		pressedX = false;
+		pressedY = false;
+		pressedZ = false;
 
 		// initialize the rotation values
-		dimension = 0.1f;
+		dimension = 1;
 	}
 
 	// Window destructor
@@ -92,20 +95,37 @@ namespace cgicmc {
 
 		// rotation keys
 		// do rotation on X axis
-		if (glfwGetKey(_window, GLFW_KEY_X) == GLFW_PRESS)
+		if (glfwGetKey(_window, GLFW_KEY_X) == GLFW_PRESS) {
+			pressedX = true;
 			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				angleX -= ROT_VAR; // invert rotation when Shift is pressed
 			else angleX += ROT_VAR;
+		}
+
+		if (glfwGetKey(_window, GLFW_KEY_X) == GLFW_RELEASE)
+			pressedX = false;
+
 		// do rotation on Y axis
-		if (glfwGetKey(_window, GLFW_KEY_Y) == GLFW_PRESS)
+		if (glfwGetKey(_window, GLFW_KEY_Y) == GLFW_PRESS) {
+			pressedY = true;
 			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				angleY -= ROT_VAR;
 			else angleY += ROT_VAR;
+		}
+
+		if (glfwGetKey(_window, GLFW_KEY_Y) == GLFW_RELEASE)
+			pressedY = false;
+
 		// do rotation on Z axis
-		if (glfwGetKey(_window, GLFW_KEY_Z) == GLFW_PRESS)
+		if (glfwGetKey(_window, GLFW_KEY_Z) == GLFW_PRESS) {
+			pressedZ = true;
 			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 				angleZ -= ROT_VAR;
 			else angleZ += ROT_VAR;
+		}
+
+		if (glfwGetKey(_window, GLFW_KEY_Z) == GLFW_RELEASE)
+			pressedZ = false;
 
 		// scaling keys
 		// increase object size
@@ -114,6 +134,39 @@ namespace cgicmc {
 		// decrease object size
 		if (glfwGetKey(_window, GLFW_KEY_N) == GLFW_PRESS)
 			dimension -= SCA_VAR;
+	}
+
+	glm::mat4 Window::getRotationMatrix() {
+		glm::mat4 rotationX = glm::mat4(1.0f);
+		glm::mat4 rotationY = glm::mat4(1.0f);
+		glm::mat4 rotationZ = glm::mat4(1.0f);
+		float sin, cos;
+
+		// compute rotation on x axis
+		sin = glm::sin(angleX);
+		cos = glm::cos(angleX);
+		rotationX[1][1] = cos;
+		rotationX[1][2] = sin;
+		rotationX[2][1] = -sin;
+		rotationX[2][2] = cos;
+	
+		// compute rotation on y axis
+		sin = glm::sin(angleY);
+		cos = glm::cos(angleY);
+		rotationY[0][0] = cos;
+		rotationY[0][2] = sin;
+		rotationY[2][0] = -sin;
+		rotationY[2][2] = cos;
+	
+		// compute rotation on z axis
+		sin = glm::sin(angleZ);
+		cos = glm::cos(angleZ);
+		rotationZ[0][0] = cos;
+		rotationZ[0][1] = sin;
+		rotationZ[1][0] = -sin;
+		rotationZ[1][1] = cos;
+		
+		return rotationX*rotationY*rotationZ;
 	}
 
 	void Window::run(const char * objFile) {
@@ -165,18 +218,16 @@ namespace cgicmc {
 
 		// window main loop
 		while (!glfwWindowShouldClose(_window)) {
-			
 			// process the input commands
 			processInput(_window);
-
+			
 			// calculate the scaling matrix
 			glm::mat4 scalingMatrix = glm::mat4(1.0f);
 			scalingMatrix[0][0] = dimension;
 			scalingMatrix[1][1] = dimension;
 			scalingMatrix[2][2] = dimension;
 
-			// TODO: calcuate the rotation matrix
-			glm::mat4 rotationMatrix = glm::mat4(1.0f);
+			glm::mat4 rotationMatrix = getRotationMatrix();
 
 			// apply the transformations
 			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(scalingMatrix * rotationMatrix));

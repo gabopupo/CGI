@@ -30,17 +30,19 @@ public:
 
 protected:
   void processInput(GLFWwindow *window);
+  glm::mat4 getRotationMatrix();
 
   // openGL variables
   GLFWwindow *_window;
 
   // translation variables
   float angleX, angleY, angleZ;
-  const float ROT_VAR = 0.01f;
+  bool pressedX, pressedY, pressedZ;
+  const float ROT_VAR = 0.05f;
 
   // rotation variables
   float dimension;
-  const float SCA_VAR = 0.001f;
+  const float SCA_VAR = 0.025f;
 };
 }
 
