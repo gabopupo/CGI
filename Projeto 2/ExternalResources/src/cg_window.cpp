@@ -67,6 +67,11 @@ namespace cgicmc {
 		return shaderProgram;
 	}
 
+	// get cotangent of angle
+	inline float cot(float x) {
+		return 1/glm::tan(x);
+	}
+
 	// create a single window with the specified size
 	void Window::createWindow(int width, int height) {
 		_window = glfwCreateWindow(width, height, "CG 2019", NULL, NULL);
@@ -81,6 +86,8 @@ namespace cgicmc {
 			exit(-2);
 		}
 		glViewport(0, 0, width, height);
+		screenHeight = height;
+		screenWidth = width;
 	}
 
 	// process the useful inputs
@@ -162,20 +169,20 @@ namespace cgicmc {
 		// set up the vertices points
 		float vertices[] = {
 			// bottom triangle	
-			0.0f, -0.5f, 0.0f, // left  
-			0.3f, -0.5f, 0.0f, // right 
+			0.0f, -0.5f, 0, // left  
+			0.3f, -0.5f, 0, // right 
 			0.0f,  0.0f, 0.0f,  // top   
 			// right triangle			
 			0.0f,  0.0f, 0.0f,  // left
-			0.5f,  0.0f, 0.0f,  // right
-			0.5f,  0.3f, 0.0f,   // top 
+			0.5f,  0.0f, 0,  // right
+			0.5f,  0.3f, 0,   // top 
 			// top triangle	
-			-0.3f,  0.5f, 0.0f,  // left
-			0.0f,  0.5f, 0.0f,  // right
+			-0.3f,  0.5f, 0,  // left
+			0.0f,  0.5f, 0,  // right
 			0.0f,  0.0f, 0.0f,   // top 
 			// left triangle	
-			-0.5f,  0.0f, 0.0f,  // left
-			-0.5f,  -0.3f, 0.0f,  // right
+			-0.5f,  0.0f, 0,  // left
+			-0.5f,  -0.3f, 0,  // right
 			0.0f,  0.0f, 0.0f,   // top  
 		};
 
@@ -212,10 +219,47 @@ namespace cgicmc {
 			scalingMatrix[1][1] = dimension;
 			scalingMatrix[2][2] = dimension;
 
+			// get rotation matrix based on pressed keys
 			glm::mat4 rotationMatrix = getRotationMatrix();
 
+			// calculate the viewport matrices
+			glm::mat4 viewTranslationMatrix = glm::mat4(1.0f);
+			viewTranslationMatrix[2][3] = -1;
+
+			glm::vec3 lookAt = glm::vec3(0.0f, 0.0f, 1.0f);
+			glm::vec3 n = glm::normalize(lookAt);
+			glm::vec3 u = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), n));
+			glm::vec3 v = glm::cross(n, u);
+
+			glm::mat4 viewRotationMatrix = glm::mat4(1.0f);
+			viewRotationMatrix[0][0] = u.x;
+			viewRotationMatrix[0][1] = u.y;
+			viewRotationMatrix[0][2] = u.z;
+			
+			viewRotationMatrix[1][0] = v.x;
+			viewRotationMatrix[1][1] = v.y;
+			viewRotationMatrix[1][2] = v.z;
+			
+			viewRotationMatrix[2][0] = n.x;
+			viewRotationMatrix[2][1] = n.y;
+			viewRotationMatrix[2][2] = n.z;
+
+			// conversion from world coordinates to viewing coordinates
+			glm::mat4 viewMatrix = viewRotationMatrix * viewTranslationMatrix;
+			
+			// normalize viewport
+			float zNear = 0.1f, zFar = 100.0f;
+			glm::mat4 normalizedPerspective = glm::mat4(1.0f);
+			float frustumAngle = 15.0f;
+			normalizedPerspective[0][0] = cot(frustumAngle/2)/(screenWidth / screenHeight);
+			normalizedPerspective[1][1] = cot(frustumAngle/2);
+			normalizedPerspective[2][2] = (zNear + zFar)/(zNear - zFar);
+			normalizedPerspective[3][3] = 0;
+			normalizedPerspective[3][2] = -1;
+			normalizedPerspective[2][3] = -((2*zNear*zFar)/(zNear - zFar));
+
 			// apply the transformations
-			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(scalingMatrix * rotationMatrix));
+			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(scalingMatrix * rotationMatrix * glm::transpose(normalizedPerspective) * glm::transpose(viewMatrix)));
 
 			// paint the background
 			glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
