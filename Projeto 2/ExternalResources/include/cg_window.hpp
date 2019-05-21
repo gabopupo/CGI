@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/type_ptr.hpp> // glm::value_ptr
+#include <glm/gtc/matrix_transform.hpp> // glm::lookAt
 #include <iostream>
 
 namespace cgicmc {
@@ -42,6 +43,9 @@ protected:
   // rotation variables
   float dimension;
   const float SCA_VAR = 0.025f;
+
+  // screen dimensions
+  float screenWidth, screenHeight;
 };
 }
 
