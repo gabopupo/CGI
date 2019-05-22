@@ -11,42 +11,42 @@
 
 namespace cgicmc {
 
-class Window {
-public:
-  ///
-  /// Instantiates glfw environment
-  Window();
+	class Window {
+	public:
+		///
+		/// Instantiates glfw environment
+		Window();
 
-  ///
-  /// Finalizes glfw environment
-  ~Window();
+		///
+		/// Finalizes glfw environment
+		~Window();
 
-  ///
-  /// Create a single window with the specified size
-  void createWindow(int, int);
+		///
+		/// Create a single window with the specified size
+		void createWindow(int, int);
 
-  ///
-  /// Run the application in a loop.
-  void run(const char *);
+		///
+		/// Run the application in a loop.
+		void run(const char *);
 
-protected:
-  void processInput(GLFWwindow *window);
-  glm::mat4 getRotationMatrix();
+	protected:
+		void processInput(GLFWwindow *window);
+		glm::mat4 getRotationMatrix();
 
-  // openGL variables
-  GLFWwindow *_window;
+		// openGL variables
+		GLFWwindow *_window;
 
-  // translation variables
-  float angleX, angleY, angleZ;
-  const float ROT_VAR = 0.05f;
+		// translation variables
+		float angleX, angleY, angleZ;
+		const float ROT_VAR = 0.05f;
 
-  // rotation variables
-  float dimension;
-  const float SCA_VAR = 0.025f;
+		// rotation variables
+		float dimension;
+		const float SCA_VAR = 0.025f;
 
-  // screen dimensions
-  float screenWidth, screenHeight;
-};
+		// screen dimensions
+		float screenWidth, screenHeight;
+	};
 }
 
 #endif

@@ -1,5 +1,7 @@
 #include <cg_window.hpp>
 
+#include "model.h"
+
 namespace cgicmc {
 
 	// Window constructor
@@ -24,21 +26,40 @@ namespace cgicmc {
 	Window::~Window() { glfwTerminate(); }
 
 	// vertex shader source string
-	const char *vertexShaderSource = 
+	const char *vertexShaderSource =
 		"#version 330 core\n"
-		"layout (location = 0) in vec3 aPos;\n"
+		"layout(location = 0) in vec3 aPos;\n"
+		"layout(location = 1) in vec3 aNormal;\n"
+		"layout(location = 2) in vec2 aTexCoords;\n"
+
+		"out vec2 TexCoords;\n"
 
 		"uniform mat4 transform;\n"
 
 		"void main() {\n"
-		"   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"TexCoords = aTexCoords;\n"
+		"   gl_Position = transform * vec4(aPos, 1.0);\n"
 		"}\0";
 
 	// fragment shader source string
-	const char *fragmentShaderSource = "#version 330 core\n"
-		"out vec3 FragColor;\n"
+	const char *fragmentShaderSource = 
+		"#version 330 core\n"
+
+		"out vec4 FragColor;\n"
+
+		"in vec2 TexCoords;\n"
+
+		"uniform int hasTexture;\n"
+		"uniform vec4 color;\n"
+		"uniform sampler2D texture1;\n"
+
 		"void main() {\n"
-		"   FragColor = vec3(1.0f, 0.0f, 0.0f);\n"
+		"  if (hasTexture != 0) {\n"
+		"    FragColor = texture(texture1, TexCoords);\n"
+		"  }\n"
+		"  else {\n"
+		"    FragColor = color;\n"
+		"  }\n"
 		"}\n\0";
 
 	// program rendering pipeline attaching all shaders
@@ -69,11 +90,12 @@ namespace cgicmc {
 
 	// get cotangent of angle
 	inline float cot(float x) {
-		return 1/glm::tan(x);
+		return 1 / glm::tan(x);
 	}
 
 	// create a single window with the specified size
-	void Window::createWindow(int width, int height) {
+	void Window::createWindow(int width, int height) 
+	{
 		_window = glfwCreateWindow(width, height, "CG 2019", NULL, NULL);
 		if (_window == NULL) {
 			std::cout << "Failed to create GLFW window\n";
@@ -91,8 +113,8 @@ namespace cgicmc {
 	}
 
 	// process the useful inputs
-	void Window::processInput(GLFWwindow *_window) {
-
+	void Window::processInput(GLFWwindow *_window) 
+	{
 		// escape key: close process
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(_window, true);
@@ -128,7 +150,8 @@ namespace cgicmc {
 			dimension -= SCA_VAR;
 	}
 
-	glm::mat4 Window::getRotationMatrix() {
+	glm::mat4 Window::getRotationMatrix() 
+	{
 		glm::mat4 rotationX = glm::mat4(1.0f);
 		glm::mat4 rotationY = glm::mat4(1.0f);
 		glm::mat4 rotationZ = glm::mat4(1.0f);
@@ -141,7 +164,7 @@ namespace cgicmc {
 		rotationX[1][2] = sin;
 		rotationX[2][1] = -sin;
 		rotationX[2][2] = cos;
-	
+
 		// compute rotation on y axis
 		sin = glm::sin(angleY);
 		cos = glm::cos(angleY);
@@ -149,7 +172,7 @@ namespace cgicmc {
 		rotationY[0][2] = sin;
 		rotationY[2][0] = -sin;
 		rotationY[2][2] = cos;
-	
+
 		// compute rotation on z axis
 		sin = glm::sin(angleZ);
 		cos = glm::cos(angleZ);
@@ -157,59 +180,26 @@ namespace cgicmc {
 		rotationZ[0][1] = sin;
 		rotationZ[1][0] = -sin;
 		rotationZ[1][1] = cos;
-		
-		return rotationX*rotationY*rotationZ;
+
+		return rotationX * rotationY*rotationZ;
 	}
 
-	void Window::run(const char * objFile) {
+	void Window::run(const char * objFile)
+	{
+		// enable the depth test
+		glEnable(GL_DEPTH_TEST);
+
 		// build and compile our shader program
 		GLint shaderProgram = createRenderingPipeline();
-		glUseProgram(shaderProgram);
 
-		// set up the vertices points
-		float vertices[] = {
-			// bottom triangle	
-			0.0f, -0.5f, 0, // left  
-			0.3f, -0.5f, 0, // right 
-			0.0f,  0.0f, 0.0f,  // top   
-			// right triangle			
-			0.0f,  0.0f, 0.0f,  // left
-			0.5f,  0.0f, 0,  // right
-			0.5f,  0.3f, 0,   // top 
-			// top triangle	
-			-0.3f,  0.5f, 0,  // left
-			0.0f,  0.5f, 0,  // right
-			0.0f,  0.0f, 0.0f,   // top 
-			// left triangle	
-			-0.5f,  0.0f, 0,  // left
-			-0.5f,  -0.3f, 0,  // right
-			0.0f,  0.0f, 0.0f,   // top  
-		};
-
-		// generate and bind the Vertex Array Object (VAO)
-		GLuint VAO;
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
-
-		// generate and bind the Vertex Buffer Object (VAO)
-		GLuint VBO;
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-		// send our vertices data to the OpenGL buffer
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		// specify that our coordinate data is going into attribute index 0, and contains 3 floats per vertex
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
-
-		// enable attribute index 0 as being used
-		glEnableVertexAttribArray(0);
+		Model model(objFile);
 
 		// get the "transform" variable location (to apply transformations later)
 		GLuint shaderTransform = glGetUniformLocation(shaderProgram, "transform");
 
 		// window main loop
-		while (!glfwWindowShouldClose(_window)) {
+		while (!glfwWindowShouldClose(_window)) 
+		{
 			// process the input commands
 			processInput(_window);
 
@@ -235,28 +225,28 @@ namespace cgicmc {
 			viewRotationMatrix[0][0] = u.x;
 			viewRotationMatrix[0][1] = u.y;
 			viewRotationMatrix[0][2] = u.z;
-			
+
 			viewRotationMatrix[1][0] = v.x;
 			viewRotationMatrix[1][1] = v.y;
 			viewRotationMatrix[1][2] = v.z;
-			
+
 			viewRotationMatrix[2][0] = n.x;
 			viewRotationMatrix[2][1] = n.y;
 			viewRotationMatrix[2][2] = n.z;
 
 			// conversion from world coordinates to viewing coordinates
 			glm::mat4 viewMatrix = viewRotationMatrix * viewTranslationMatrix;
-			
+
 			// normalize viewport
 			float zNear = 0.1f, zFar = 100.0f;
 			glm::mat4 normalizedPerspective = glm::mat4(1.0f);
 			float frustumAngle = 15.0f;
-			normalizedPerspective[0][0] = cot(frustumAngle/2)/(screenWidth / screenHeight);
-			normalizedPerspective[1][1] = cot(frustumAngle/2);
-			normalizedPerspective[2][2] = (zNear + zFar)/(zNear - zFar);
+			normalizedPerspective[0][0] = cot(frustumAngle / 2) / (screenWidth / screenHeight);
+			normalizedPerspective[1][1] = cot(frustumAngle / 2);
+			normalizedPerspective[2][2] = (zNear + zFar) / (zNear - zFar);
 			normalizedPerspective[3][3] = 0;
 			normalizedPerspective[3][2] = -1;
-			normalizedPerspective[2][3] = -((2*zNear*zFar)/(zNear - zFar));
+			normalizedPerspective[2][3] = -((2 * zNear*zFar) / (zNear - zFar));
 
 			// apply the transformations
 			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(scalingMatrix * rotationMatrix * glm::transpose(normalizedPerspective) * glm::transpose(viewMatrix)));
@@ -265,8 +255,8 @@ namespace cgicmc {
 			glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			// draw the triangles
-			glDrawArrays(GL_TRIANGLES, 0, 12);
+			// draw the model
+			model.Draw(shaderProgram);
 
 			// swap the buffers to make any changes visible
 			glfwSwapBuffers(_window);
@@ -275,8 +265,7 @@ namespace cgicmc {
 			glfwPollEvents();
 		}
 
-		// de-allocate all resources once they've outlived their purpose:
-		glDeleteVertexArrays(GL_TRUE, &VAO);
-		glDeleteBuffers(GL_TRUE, &VBO);
+		// clear all the glfw resources
+		glfwTerminate();
 	}
 }
