@@ -147,7 +147,12 @@ namespace cgicmc {
 			dimension += SCA_VAR;
 		// decrease object size
 		if (glfwGetKey(_window, GLFW_KEY_N) == GLFW_PRESS)
-			dimension -= SCA_VAR;
+			if (dimension > SCA_VAR/5) {
+				if (dimension > 15*SCA_VAR)
+					dimension -= SCA_VAR;
+				else
+					dimension -= SCA_VAR/5;
+			}
 	}
 
 	glm::mat4 Window::getRotationMatrix() 
@@ -191,12 +196,11 @@ namespace cgicmc {
 
 		// build and compile our shader program
 		GLint shaderProgram = createRenderingPipeline();
-
 		Model model(objFile);
-
+		
 		// get the "transform" variable location (to apply transformations later)
 		GLuint shaderTransform = glGetUniformLocation(shaderProgram, "transform");
-
+		
 		// window main loop
 		while (!glfwWindowShouldClose(_window)) 
 		{
