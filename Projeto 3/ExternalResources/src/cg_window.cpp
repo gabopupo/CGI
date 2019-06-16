@@ -4,12 +4,13 @@
 
 glm::vec3 front;
 bool firstMouse = true;
-float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+float yaw = -90.0f;	
 float pitch = 0.0f;
 float lastX;
 float lastY;
 float fov = 45.0f;
 
+// Mouse functions
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
@@ -355,7 +356,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = xpos;
 	lastY = ypos;
 
-	float sensitivity = 0.05f; // change this value to your liking
+	float sensitivity = 0.05f; 
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
@@ -370,12 +371,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 		pitch = -89.0f;
 
 
-	//glm::vec3 front;
+	
 	front.x = 10 * (cos(glm::radians(yaw)) * cos(glm::radians(pitch)));
 	front.y = 10 * sin(glm::radians(pitch));
 	front.z = 10 * (sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
 
-	//front = glm::normalize(front);
+	
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
