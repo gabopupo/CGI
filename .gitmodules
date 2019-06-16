@@ -1,0 +1,9 @@
+[submodule "Projeto 2/ExternalResources/glfw"]
+	path = Projeto 2/ExternalResources/glfw
+	url = https://github.com/glfw/glfw
+[submodule "Projeto 1/ExternalResources/glfw"]
+	path = Projeto 1/ExternalResources/glfw
+	url = https://github.com/glfw/glfw
+[submodule "Projeto 2/ExternalResources/GLFW3"]
+	path = Projeto 2/ExternalResources/GLFW3
+	url = https://github.com/glfw/glfw

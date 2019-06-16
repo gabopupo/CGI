@@ -5,7 +5,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <OBJ_Loader.h>
+#include <OBJ_Loader.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -50,7 +50,7 @@ private:
         // read file via OBJ_loader
 		objl::Loader loader;
 		loader.LoadFile(path);
-        
+                
         // retrieve the directory path of the file path
 		string pathS = path;
         directory = pathS.substr(0, pathS.find_last_of('/'));
@@ -61,6 +61,7 @@ private:
 		for (int i = 0; i < loader.LoadedMeshes.size(); i++) {
 			meshes.push_back(processMesh(loader.LoadedMeshes[i]));
 		}
+
     }
 
     Mesh processMesh(objl::Mesh mesh)

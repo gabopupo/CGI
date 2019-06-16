@@ -1,0 +1,3 @@
+/home/gabriel/Documentos/CGI/Projeto 2/ExternalResources/CMakeFiles/rebuild_cache.dir
+/home/gabriel/Documentos/CGI/Projeto 2/ExternalResources/CMakeFiles/cg2019cpp.dir
+/home/gabriel/Documentos/CGI/Projeto 2/ExternalResources/CMakeFiles/edit_cache.dir

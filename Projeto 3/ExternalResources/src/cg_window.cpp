@@ -14,11 +14,16 @@ namespace cgicmc {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		// initialize the translation values
+		x = 0;
+		y = 0;
+		z = 0;
+
+		// initialize the rotation values
 		angleX = 0;
 		angleY = 0;
 		angleZ = 0;
 
-		// initialize the rotation values
+		// initialize the scaling values
 		dimension = 1;
 	}
 
@@ -153,6 +158,21 @@ namespace cgicmc {
 				else
 					dimension -= SCA_VAR/5;
 			}
+
+		// translation keys
+		if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+			z += DIST_VAR; // W: move front
+		if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+			x -= DIST_VAR; // A: mode left
+		if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+			z -= DIST_VAR; // S: move back
+		if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+			x += DIST_VAR; // D: move right
+		if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+				y += DIST_VAR; // W: move up
+			else if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+				y -= DIST_VAR; // S: move down
 	}
 
 	glm::mat4 Window::getRotationMatrix() 
@@ -215,6 +235,12 @@ namespace cgicmc {
 
 			// get rotation matrix based on pressed keys
 			glm::mat4 rotationMatrix = getRotationMatrix();
+					
+			// calculate the translation matrix
+			glm::mat4 translationMatrix = glm::mat4(1.0f);
+			translationMatrix[0][3] = x;
+			translationMatrix[1][3] = y;
+			translationMatrix[2][3] = z;
 
 			// calculate the viewport matrices
 			glm::mat4 viewTranslationMatrix = glm::mat4(1.0f);
@@ -242,7 +268,7 @@ namespace cgicmc {
 			glm::mat4 viewMatrix = viewRotationMatrix * viewTranslationMatrix;
 
 			// normalize viewport
-			float zNear = 0.1f, zFar = 100.0f;
+			float zNear = 0.001f, zFar = 50.0f;
 			glm::mat4 normalizedPerspective = glm::mat4(1.0f);
 			float frustumAngle = 15.0f;
 			normalizedPerspective[0][0] = cot(frustumAngle / 2) / (screenWidth / screenHeight);
@@ -253,7 +279,7 @@ namespace cgicmc {
 			normalizedPerspective[2][3] = -((2 * zNear*zFar) / (zNear - zFar));
 
 			// apply the transformations
-			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(scalingMatrix * rotationMatrix * glm::transpose(normalizedPerspective) * glm::transpose(viewMatrix)));
+			glUniformMatrix4fv(shaderTransform, 1, GL_TRUE, glm::value_ptr(scalingMatrix * rotationMatrix * translationMatrix * glm::transpose(normalizedPerspective) * glm::transpose(viewMatrix)));
 
 			// paint the background
 			glClearColor(0.7f, 0.7f, 0.7f, 1.0f);
