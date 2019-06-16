@@ -2,6 +2,18 @@
 
 #include "model.h"
 
+glm::vec3 front;
+bool firstMouse = true;
+float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
+float pitch = 0.0f;
+float lastX;
+float lastY;
+float fov = 45.0f;
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
+
 namespace cgicmc {
 
 	// Window constructor
@@ -18,6 +30,7 @@ namespace cgicmc {
 		y = 0;
 		z = 0;
 
+	
 		// initialize the rotation values
 		angleX = 0;
 		angleY = 0;
@@ -25,6 +38,9 @@ namespace cgicmc {
 
 		// initialize the scaling values
 		dimension = 1;
+	
+	
+	
 	}
 
 	// Window destructor
@@ -47,7 +63,7 @@ namespace cgicmc {
 		"}\0";
 
 	// fragment shader source string
-	const char *fragmentShaderSource = 
+	const char *fragmentShaderSource =
 		"#version 330 core\n"
 
 		"out vec4 FragColor;\n"
@@ -99,7 +115,7 @@ namespace cgicmc {
 	}
 
 	// create a single window with the specified size
-	void Window::createWindow(int width, int height) 
+	void Window::createWindow(int width, int height)
 	{
 		_window = glfwCreateWindow(width, height, "CG 2019", NULL, NULL);
 		if (_window == NULL) {
@@ -112,13 +128,27 @@ namespace cgicmc {
 			std::cout << "Failed to initialize GLAD\n";
 			exit(-2);
 		}
+		
+
+
 		glViewport(0, 0, width, height);
 		screenHeight = height;
 		screenWidth = width;
+	
+		lastX = screenWidth / 2.0;
+		lastY = screenHeight / 2.0;
+	
+		glfwSetCursorPosCallback(_window, mouse_callback);
+		glfwSetScrollCallback(_window, scroll_callback);
+
+		// tell GLFW to capture our mouse
+		glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		
+	
 	}
 
 	// process the useful inputs
-	void Window::processInput(GLFWwindow *_window) 
+	void Window::processInput(GLFWwindow *_window)
 	{
 		// escape key: close process
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -152,11 +182,11 @@ namespace cgicmc {
 			dimension += SCA_VAR;
 		// decrease object size
 		if (glfwGetKey(_window, GLFW_KEY_N) == GLFW_PRESS)
-			if (dimension > SCA_VAR/5) {
-				if (dimension > 15*SCA_VAR)
+			if (dimension > SCA_VAR / 5) {
+				if (dimension > 15 * SCA_VAR)
 					dimension -= SCA_VAR;
 				else
-					dimension -= SCA_VAR/5;
+					dimension -= SCA_VAR / 5;
 			}
 
 		// translation keys
@@ -175,7 +205,7 @@ namespace cgicmc {
 				y -= DIST_VAR; // S: move down
 	}
 
-	glm::mat4 Window::getRotationMatrix() 
+	glm::mat4 Window::getRotationMatrix()
 	{
 		glm::mat4 rotationX = glm::mat4(1.0f);
 		glm::mat4 rotationY = glm::mat4(1.0f);
@@ -183,16 +213,16 @@ namespace cgicmc {
 		float sin, cos;
 
 		// compute rotation on x axis
-		sin = glm::sin(angleX);
-		cos = glm::cos(angleX);
+		sin = glm::sin(angleX + front.y);
+		cos = glm::cos(angleX + front.y);
 		rotationX[1][1] = cos;
 		rotationX[1][2] = sin;
 		rotationX[2][1] = -sin;
 		rotationX[2][2] = cos;
 
 		// compute rotation on y axis
-		sin = glm::sin(angleY);
-		cos = glm::cos(angleY);
+		sin = glm::sin(angleY + front.x);
+		cos = glm::cos(angleY + front.x);
 		rotationY[0][0] = cos;
 		rotationY[0][2] = sin;
 		rotationY[2][0] = -sin;
@@ -206,7 +236,7 @@ namespace cgicmc {
 		rotationZ[1][0] = -sin;
 		rotationZ[1][1] = cos;
 
-		return rotationX * rotationY*rotationZ;
+		return rotationX * rotationY * rotationZ;
 	}
 
 	void Window::run(const char * objFile)
@@ -217,12 +247,12 @@ namespace cgicmc {
 		// build and compile our shader program
 		GLint shaderProgram = createRenderingPipeline();
 		Model model(objFile);
-		
+
 		// get the "transform" variable location (to apply transformations later)
 		GLuint shaderTransform = glGetUniformLocation(shaderProgram, "transform");
-		
+
 		// window main loop
-		while (!glfwWindowShouldClose(_window)) 
+		while (!glfwWindowShouldClose(_window))
 		{
 			// process the input commands
 			processInput(_window);
@@ -235,21 +265,24 @@ namespace cgicmc {
 
 			// get rotation matrix based on pressed keys
 			glm::mat4 rotationMatrix = getRotationMatrix();
-					
+
 			// calculate the translation matrix
 			glm::mat4 translationMatrix = glm::mat4(1.0f);
-			translationMatrix[0][3] = x;
-			translationMatrix[1][3] = y;
-			translationMatrix[2][3] = z;
+			translationMatrix[0][3] = x ;
+			translationMatrix[1][3] = y ;
+			translationMatrix[2][3] = z + fov;
+
+
+
 
 			// calculate the viewport matrices
 			glm::mat4 viewTranslationMatrix = glm::mat4(1.0f);
 			viewTranslationMatrix[2][3] = -1;
 
 			glm::vec3 lookAt = glm::vec3(0.0f, 0.0f, 1.0f);
-			glm::vec3 n = glm::normalize(lookAt);
-			glm::vec3 u = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), n));
-			glm::vec3 v = glm::cross(n, u);
+			glm::vec3 n = glm::normalize(lookAt); // camera direction
+			glm::vec3 u = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), n)); // camera right
+			glm::vec3 v = glm::cross(n, u); // camera up
 
 			glm::mat4 viewRotationMatrix = glm::mat4(1.0f);
 			viewRotationMatrix[0][0] = u.x;
@@ -298,4 +331,57 @@ namespace cgicmc {
 		// clear all the glfw resources
 		glfwTerminate();
 	}
+
+
+	
+
+
+}
+
+// glfw: whenever the mouse moves, this callback is called
+	// -------------------------------------------------------
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+
+	if (firstMouse)
+	{
+		lastX = xpos;
+		lastY = ypos;
+		firstMouse = false;
+	}
+
+	float xoffset = xpos - lastX;
+	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	lastX = xpos;
+	lastY = ypos;
+
+	float sensitivity = 0.05f; // change this value to your liking
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	yaw += xoffset;
+	pitch += yoffset;
+
+
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+
+	//glm::vec3 front;
+	front.x = 10 * (cos(glm::radians(yaw)) * cos(glm::radians(pitch)));
+	front.y = 10 * sin(glm::radians(pitch));
+	front.z = 10 * (sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
+
+	//front = glm::normalize(front);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	fov -= 5*yoffset;
+	
 }

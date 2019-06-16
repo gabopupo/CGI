@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp> // glm::lookAt
 #include <iostream>
 
+
+
 namespace cgicmc {
 
 	class Window {
@@ -39,7 +41,7 @@ namespace cgicmc {
 
 		// translation variables
 		float x, y, z;
-		const float DIST_VAR = 0.1f;
+		const float DIST_VAR = 0.5f;
 
 		// rotation variables
 		float angleX, angleY, angleZ;
@@ -51,6 +53,12 @@ namespace cgicmc {
 
 		// screen dimensions
 		float screenWidth, screenHeight;
+	
+	
+		
+
+	
+	
 	};
 }
 

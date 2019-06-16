@@ -38,6 +38,11 @@ public:
 	bool hasTexture;
 	Texture texture;
 
+	// used to find the model size and center
+	float minX = 1000;
+	float maxX = -1000;
+	float minY = 1000;
+	float maxY = -1000;
 
     // constructor
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, glm::vec4 color, bool hasTexture, Texture texture)
@@ -47,6 +52,19 @@ public:
 		this->color = color;
 		this->hasTexture = hasTexture;
         this->texture = texture;
+
+
+		// find the min and max points
+		for (int i = 0; i < vertices.size(); i++) {
+			if (vertices[i].Position.x < minX)
+				minX = vertices[i].Position.x;
+			if (vertices[i].Position.x > maxX)
+				maxX = vertices[i].Position.x;
+			if (vertices[i].Position.y < minY)
+				minY = vertices[i].Position.y;
+			if (vertices[i].Position.y > maxY)
+				maxY = vertices[i].Position.y;
+		}
 
         // now that we have all the required data, set the vertex buffers and its attribute pointers
         setupMesh();

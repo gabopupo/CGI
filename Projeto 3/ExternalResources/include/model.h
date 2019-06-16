@@ -5,10 +5,10 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <OBJ_Loader.hpp>
+#include <OBJ/OBJ_Loader.h>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
 #include "mesh.h"
 
@@ -30,6 +30,12 @@ public:
     vector<Mesh> meshes;
     string directory;
 
+	// used to find the model size and center
+	float minX = 1000;
+	float maxX = -1000;
+	float minY = 1000;
+	float maxY = -1000;
+
     // constructor, expects a file path to a obj model
     Model(const char *path)
     {
@@ -50,7 +56,7 @@ private:
         // read file via OBJ_loader
 		objl::Loader loader;
 		loader.LoadFile(path);
-                
+
         // retrieve the directory path of the file path
 		string pathS = path;
         directory = pathS.substr(0, pathS.find_last_of('/'));
@@ -59,9 +65,20 @@ private:
 
         // convert and process all the meshes from OBJ_loader to our meshes
 		for (int i = 0; i < loader.LoadedMeshes.size(); i++) {
-			meshes.push_back(processMesh(loader.LoadedMeshes[i]));
-		}
+			Mesh newMesh = processMesh(loader.LoadedMeshes[i]);
 
+			// find the model's maxs and mins
+			if (newMesh.minX < minX)
+				minX = newMesh.minX;
+			if (newMesh.maxX > maxX)
+				maxX = newMesh.maxX;
+			if (newMesh.minY < minY)
+				minY = newMesh.minY;
+			if (newMesh.maxY > maxY)
+				maxY = newMesh.maxY;
+
+			meshes.push_back(newMesh);
+		}
     }
 
     Mesh processMesh(objl::Mesh mesh)
