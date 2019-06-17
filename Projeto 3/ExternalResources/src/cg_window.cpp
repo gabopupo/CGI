@@ -155,55 +155,23 @@ namespace cgicmc {
 		if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(_window, true);
 
-		// rotation keys
-		// do rotation on X axis
-		if (glfwGetKey(_window, GLFW_KEY_X) == GLFW_PRESS) {
-			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-				angleX -= ROT_VAR; // invert rotation when Shift is pressed
-			else angleX += ROT_VAR;
-		}
-
-		// do rotation on Y axis
-		if (glfwGetKey(_window, GLFW_KEY_Y) == GLFW_PRESS) {
-			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-				angleY -= ROT_VAR;
-			else angleY += ROT_VAR;
-		}
-
-		// do rotation on Z axis
-		if (glfwGetKey(_window, GLFW_KEY_Z) == GLFW_PRESS) {
-			if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-				angleZ -= ROT_VAR;
-			else angleZ += ROT_VAR;
-		}
-
-		// scaling keys
-		// increase object size
-		if (glfwGetKey(_window, GLFW_KEY_M) == GLFW_PRESS)
-			dimension += SCA_VAR;
-		// decrease object size
-		if (glfwGetKey(_window, GLFW_KEY_N) == GLFW_PRESS)
-			if (dimension > SCA_VAR / 5) {
-				if (dimension > 15 * SCA_VAR)
-					dimension -= SCA_VAR;
-				else
-					dimension -= SCA_VAR / 5;
-			}
-
 		// translation keys
-		if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-			z += DIST_VAR; // W: move front
-		if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
-			x -= DIST_VAR; // A: mode left
-		if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-			z -= DIST_VAR; // S: move back
-		if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
-			x += DIST_VAR; // D: move right
-		if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		
+		if (glfwGetKey(_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
 			if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
-				y += DIST_VAR; // W: move up
+				y -= DIST_VAR; // W: move up
 			else if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
-				y -= DIST_VAR; // S: move down
+				y += DIST_VAR; // S: move down
+		} else {
+			if (glfwGetKey(_window, GLFW_KEY_W) == GLFW_PRESS)
+				z -= DIST_VAR; // W: move front
+			if (glfwGetKey(_window, GLFW_KEY_A) == GLFW_PRESS)
+				x += DIST_VAR; // A: mode left
+			if (glfwGetKey(_window, GLFW_KEY_S) == GLFW_PRESS)
+				z += DIST_VAR; // S: move back
+			if (glfwGetKey(_window, GLFW_KEY_D) == GLFW_PRESS)
+				x -= DIST_VAR; // D: move right
+		}
 	}
 
 	glm::mat4 Window::getRotationMatrix()
